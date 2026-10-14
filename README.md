@@ -12,6 +12,16 @@ version.
 Both apps bundle the same site files and ship the **same shell script** — the player, the
 theme, the visualiser and the compatibility panel are one file, so a fix lands on both.
 
+## Screenshots
+
+The door at the top of the list, and the full World View it opens — the same pages the site
+serves, riding inside the app since 1.8.0:
+
+<img src="shots/phone-list.jpg" width="300" alt="MODDYS World Radio on Android — the station list with the World View door">
+<img src="shots/phone-world.jpg" width="300" alt="MODDYS World Radio on Android — the World View on a phone">
+<img src="shots/desktop-world.jpg" width="720" alt="MODDYS World Radio on Android — the World View at desktop width">
+<img src="shots/desktop-world-drawer.jpg" width="720" alt="MODDYS World Radio on Android — a dot opened: the station drawer and the player">
+
 ## What it does
 
 - **Background playback.** A `mediaPlayback` foreground service keeps the stream alive
