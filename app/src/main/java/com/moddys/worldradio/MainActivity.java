@@ -86,6 +86,7 @@ public class MainActivity extends Activity {
         s.setJavaScriptEnabled(true);
         s.setDomStorageEnabled(true);        // favourites live in localStorage
         s.setAllowFileAccess(true);          // index.html loads countries.js + stations.js
+        s.setAllowFileAccessFromFileURLs(true);  // world.html fetches its bundled map glyphs
         s.setLoadsImagesAutomatically(true);
         /* The app leaves this off so the shell (notification, focus regain) can start a
            stream without a tap. Devices whose WebView ignores it fall back to needing one,
