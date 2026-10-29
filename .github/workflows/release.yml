@@ -67,7 +67,10 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: gradle :app:assembleRelease --stacktrace
+        # Both artefacts: the APK is what the download page serves and what a phone sideloads;
+        # the .aab is the only thing Google Play accepts for a new listing. One build, one
+        # signing config, so the two can never drift apart.
+        run: gradle :app:assembleRelease :app:bundleRelease --stacktrace
 
       # Never publish something unsigned by accident: an unsigned APK installs for nobody.
       - name: Confirm the APK is actually signed
@@ -87,14 +90,31 @@ jobs:
           fi
           unzip -l "$APK" | grep -E "assets/www/(index.html|stations.js|countries.js|viz.js|geo.js|worldgeo.js|globe.js|wr-core.js|_shell_shim.js|compat.json)"
 
+      # Play will not take an APK for a new listing, so the bundle is built, checked and
+      # published next to it. An empty or unsigned .aab blocks the upload just as an unsigned
+      # APK blocks an install, so it is checked here rather than discovered in the console.
+      - name: Confirm the bundle exists and carries the web app
+        run: |
+          set -e
+          ls -la app/build/outputs/bundle/release/
+          AAB=$(ls app/build/outputs/bundle/release/*.aab | head -1)
+          echo "artifact: $AAB"
+          test -s "$AAB" || { echo "the .aab is empty"; exit 1; }
+          unzip -l "$AAB" | grep -q "base/manifest/AndroidManifest.xml" || { echo "no manifest in the .aab"; exit 1; }
+          unzip -l "$AAB" | grep -q "assets/www/podcasts.html" || { echo "the .aab has no podcast directory"; exit 1; }
+
       - name: Name the download for humans
-        run: cp app/build/outputs/apk/release/*.apk "world-radio-${{ github.ref_name }}.apk"
+        run: |
+          cp app/build/outputs/apk/release/*.apk "world-radio-${{ github.ref_name }}.apk"
+          cp app/build/outputs/bundle/release/*.aab "world-radio-${{ github.ref_name }}.aab"
 
       - name: Keep it as a workflow artifact too
         uses: actions/upload-artifact@v4
         with:
           name: world-radio-release-apk
-          path: world-radio-*.apk
+          path: |
+            world-radio-*.apk
+            world-radio-*.aab
           if-no-files-found: error
 
       - name: Publish the GitHub Release
@@ -105,9 +125,9 @@ jobs:
           set -e
           TAG="${{ github.ref_name }}"
           if gh release view "$TAG" > /dev/null 2>&1; then
-            gh release upload "$TAG" "world-radio-$TAG.apk" --clobber
+            gh release upload "$TAG" "world-radio-$TAG.apk" "world-radio-$TAG.aab" --clobber
           else
-            gh release create "$TAG" "world-radio-$TAG.apk" \
+            gh release create "$TAG" "world-radio-$TAG.apk" "world-radio-$TAG.aab" \
               --title "MODDYS World Radio $TAG" \
               --notes-file RELEASE_NOTES.md
           fi
