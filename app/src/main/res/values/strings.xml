@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MODDYS World Radio</string>
+    <!-- 2.0.0: 29 characters ("MODDYS World Radio & Podcasts") ellipsise under a launcher icon,
+         so the icon says what the app is and the store listing carries the full name. -->
+    <string name="app_name">Radio &amp; Podcasts</string>
     <string name="channel_name">Playback</string>
     <string name="channel_desc">Keeps the radio stream playing while the app is in the background</string>
-    <string name="notification_tagline">MODDYS World Radio — SPRAY IT LOUD</string>
+    <string name="notification_tagline">MODDYS Radio &amp; Podcasts — SPRAY IT LOUD</string>
     <string name="notification_stopped">Stopped — tap play to reconnect</string>
     <string name="no_webview">This device has no working Android System WebView, so the radio cannot run.\n\nOpen the Play Store and install or update "Android System WebView" (on some devices it is called "Google Chrome" that provides it), then open this app again. Devices without Google Play can use a browser that supplies a WebView instead.</string>
 </resources>

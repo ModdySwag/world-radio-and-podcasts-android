@@ -50,9 +50,11 @@ jobs:
       - name: Verify the bundled web app is complete
         run: |
           set -e
-          for f in index.html stations.js countries.js viz.js geo.js worldgeo.js globe.js wr-core.js world.html world.js globeviz.js _shell_shim.js compat.json; do
+          for f in index.html stations.js countries.js viz.js geo.js worldgeo.js globe.js wr-core.js world.html world.js globeviz.js podcasts.html pod-index.js pod-search.js _shell_shim.js compat.json; do
             test -s "app/src/main/assets/www/$f" || { echo "missing asset: $f"; exit 1; }
           done
+          test -s app/src/main/assets/www/pod-i/cat-animation.js || { echo "missing asset: pod-i/ shelves"; exit 1; }
+          test "$(ls app/src/main/assets/www/pod-i | wc -l)" = "81" || { echo "pod-i should hold 81 shelf files"; exit 1; }
           test -s app/src/main/assets/www/maplibre/maplibre-gl.js || { echo "missing asset: maplibre/maplibre-gl.js"; exit 1; }
           test -s app/src/main/assets/www/maplibre/maplibre-gl.css || { echo "missing asset: maplibre/maplibre-gl.css"; exit 1; }
           test -s app/src/main/assets/www/maplibre/fonts/NotoSansRegular/0-255.pbf || { echo "missing asset: maplibre glyphs"; exit 1; }

@@ -87,6 +87,15 @@ public class MainActivity extends Activity {
         s.setDomStorageEnabled(true);        // favourites live in localStorage
         s.setAllowFileAccess(true);          // index.html loads countries.js + stations.js
         s.setAllowFileAccessFromFileURLs(true);  // world.html fetches its bundled map glyphs
+        /* 2.0.0: the podcast directory lives at a file:// origin, and a file:// page has the
+           origin "null" - Apple's chart and lookup endpoints answer that with no usable
+           Access-Control-Allow-Origin, so every chart came back as a CORS error while the
+           bundled directory (local, no CORS) worked. This is the documented switch for a
+           hybrid app whose own bundled page talks to APIs: it stops the WebView enforcing
+           CORS against a page we ship ourselves. Nothing remote is ever loaded INTO this
+           WebView - external links go to the phone's browser (openExternal) - so the page
+           that gains this is only ever ours. */
+        s.setAllowUniversalAccessFromFileURLs(true);
         s.setLoadsImagesAutomatically(true);
         /* The app leaves this off so the shell (notification, focus regain) can start a
            stream without a tap. Devices whose WebView ignores it fall back to needing one,

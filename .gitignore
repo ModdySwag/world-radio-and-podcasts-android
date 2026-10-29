@@ -16,3 +16,7 @@ keystore.properties
 Thumbs.db
 .DS_Store
 desktop.ini
+
+# Python bytecode from the tools/ scripts
+__pycache__/
+*.pyc
