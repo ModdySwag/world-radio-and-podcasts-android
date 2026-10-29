@@ -1,25 +1,48 @@
-# MODDYS World Radio v1.9.0
+# MODDYS World Radio & Podcasts v2.0.0
 
-The app becomes the pure radio it always was on a phone: the site links that led nowhere are gone from the header, the search module folds away when you are done searching, and the search field gets a go magnifier.
+The app stops being a pure radio. The podcast directory now lives inside it - 58,795 shows you
+can browse by shelf or search by typing, ranked on the phone in about 7 ms - so the one door the
+header keeps is a door that opens something.
 
 ## What changed
 
-**The header drops the five site links.** DOWNLOADS / SYNTHHUB / MUSIC HUB / PATTERN FORGE / RESONANCE open pages the app does not carry - in a pure radio app they were five dead links. They are hidden inside the app now; the website keeps them, where they lead somewhere.
+**The podcast directory ships in the app.** `podcasts.html`, the shelf manifest, the 54,539-show
+search corpus and the 81 shelf files all ride in the bundle. Browsing works with no network at
+all; only a show's feed, its charts and its artwork go online. Search ranks locally, so there is
+no round trip and no server watching what you looked for.
 
-**The search module folds.** A ▾ sits at the right end of the search field on a phone: tap it and the stations bar, the Format / Bitrate / Country selects and the Add / Saved / Reset row tuck away, so the results get the screen - about 150px of it back on a 390px phone. The field itself stays, it is the thing you reach for again. Committing a search folds it for you (the keyboard's enter/go key, the field's ✕, or the new magnifier - the same habit the World View page's bar has); the ▴ brings everything straight back, and the choice is remembered on the device. Desktops never fold.
+**One door in the header.** Inside the app the site doors were hidden outright, because five of
+them led to pages the app does not carry and the sixth led nowhere at all. Now exactly one
+survives - the podcast directory - and it opens. The Radio link at the top of the directory
+brings you back.
 
-**A go magnifier in the search bar.** The 🔍 inside the field commits the search exactly like the keyboard's search key - and inside the app it drops the on-screen keyboard the moment you tap it.
+**Under the icon the name is shorter.** "MODDYS World Radio & Podcasts" is 29 characters, and a
+launcher ellipsises that at about twelve. The icon says **Radio & Podcasts**; the store listing
+carries the full name.
 
-**The bundled web app is the current one**, byte for byte - the same `index.html` moddys.net serves.
+**Charts work in the app.** The page runs from a `file://` origin, whose origin is "null", and
+Apple's chart endpoints answer that with no usable CORS header - so every chart was an error
+while the bundled directory worked. The WebView no longer enforces CORS against a page we ship
+ourselves.
+
+**One 404 fewer.** `radio.html` loads `app-install.js`, which was never in the bundle, so every
+load logged a missing file. It ships now.
+
+**The bundled web app is today's**, byte for byte - including the newer globe, the World View
+labels and the current 71,577-station catalogue, which the bundle had been two weeks behind on.
 
 ## Verified
 
-- `tools/shim_harness.py` drives the real shell over both bridges against the bundled page: 76 checks, 0 failed
-- the site's page suite against this page: 275 checks, 0 failed (twelve of them new: the five doors, the fold, the magnifier)
-- the same suite against what moddys.net serves: 275 checks, 0 failed
-- add-a-station 60 checks, the standalone World View page 200 checks, 0 failed
-- the fold measured on a 390px phone: the toolbar goes 211px -> 59px, and the choice survives a reload
-- every bundled web file - `index.html` included - is read back out of the published APK and compared against the site's copy, byte for byte
+- `tools/shim_harness.py` drives the real shell over both bridges against the bundled page:
+  **80 checks, 0 failed** - two of them new, pinning that `podcasts.html` and `radio.html` are
+  followed inside the app rather than handed to the browser
+- `probe-app-bundle.py` walks the whole path over `file://`, the way this WebView loads it: one
+  door, the tap, the manifest and a shelf loading over `file://`, the corpus on focus, "joe rogan"
+  landing on The Joe Rogan Experience, and the way back - **21 checks, 0 failed**
+- the site's page suite against this page: **277 checks, 0 failed**
+- the site's podcast suite: **80 checks, 0 failed**
+- every bundled web file - `index.html` included - is read back out of the published APK and
+  compared with the site's copy, byte for byte
 
 ## Install
 
