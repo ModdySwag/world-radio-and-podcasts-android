@@ -9,7 +9,7 @@ and doesn't lose the ~11,600 stations that stream over plain `http://`.
 The web app itself is untouched. If `moddys.net` changes, rebuild and you have the new
 version.
 
-**There is an iOS twin**: [world-radio-ios](https://github.com/ModdySwag/world-radio-ios).
+**There is an iOS twin**: [world-radio-and-podcasts-ios](https://github.com/ModdySwag/world-radio-and-podcasts-ios).
 Both apps bundle the same site files and ship the **same shell script** — the player, the
 theme, the visualiser and the compatibility panel are one file, so a fix lands on both.
 
