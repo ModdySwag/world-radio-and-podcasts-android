@@ -105,16 +105,16 @@ jobs:
 
       - name: Name the download for humans
         run: |
-          cp app/build/outputs/apk/release/*.apk "world-radio-${{ github.ref_name }}.apk"
-          cp app/build/outputs/bundle/release/*.aab "world-radio-${{ github.ref_name }}.aab"
+          cp app/build/outputs/apk/release/*.apk "world-radio-and-podcasts-${{ github.ref_name }}.apk"
+          cp app/build/outputs/bundle/release/*.aab "world-radio-and-podcasts-${{ github.ref_name }}.aab"
 
       - name: Keep it as a workflow artifact too
         uses: actions/upload-artifact@v4
         with:
           name: world-radio-release-apk
           path: |
-            world-radio-*.apk
-            world-radio-*.aab
+            world-radio-and-podcasts-*.apk
+            world-radio-and-podcasts-*.aab
           if-no-files-found: error
 
       - name: Publish the GitHub Release
@@ -125,10 +125,10 @@ jobs:
           set -e
           TAG="${{ github.ref_name }}"
           if gh release view "$TAG" > /dev/null 2>&1; then
-            gh release upload "$TAG" "world-radio-$TAG.apk" "world-radio-$TAG.aab" --clobber
+            gh release upload "$TAG" "world-radio-and-podcasts-$TAG.apk" "world-radio-and-podcasts-$TAG.aab" --clobber
           else
-            gh release create "$TAG" "world-radio-$TAG.apk" "world-radio-$TAG.aab" \
-              --title "MODDYS World Radio $TAG" \
+            gh release create "$TAG" "world-radio-and-podcasts-$TAG.apk" "world-radio-and-podcasts-$TAG.aab" \
+              --title "MODDYS World Radio & Podcasts $TAG" \
               --notes-file RELEASE_NOTES.md
           fi
           echo "--- release state ---"
