@@ -1,9 +1,10 @@
-# MODDYS World Radio — Android
+# MODDYS World Radio & Podcasts — Android
 
-**SPRAY IT LOUD, in your pocket.** Your existing MODDYS World Radio web app, wrapped in
-the Android shell it never had: it keeps playing when you leave the app or lock the
-screen, puts the current station on your lock screen with play/pause, and doesn't lose
-the ~8,300 stations that stream over plain `http://`.
+**SPRAY IT LOUD, in your pocket.** This is the radio site *and* the podcast directory in one
+app: **71,577 live stations** plus **58,795 shows** you can browse by shelf and search by
+typing, wrapped in the Android shell the radio never had. It keeps playing when you leave
+the app or lock the screen, puts the current station on your lock screen with play/pause,
+and doesn't lose the ~11,600 stations that stream over plain `http://`.
 
 The web app itself is untouched. If `moddys.net` changes, rebuild and you have the new
 version.
@@ -14,16 +15,22 @@ theme, the visualiser and the compatibility panel are one file, so a fix lands o
 
 ## Screenshots
 
-The door at the top of the list, and the full World View it opens — the same pages the site
-serves, riding inside the app since 1.8.0:
+The podcast directory and the station list, and the full World View the radio still opens —
+the same pages the site serves, riding inside the app:
 
-<img src="shots/phone-list.jpg" width="300" alt="MODDYS World Radio on Android — the station list with the World View door">
-<img src="shots/phone-world.jpg" width="300" alt="MODDYS World Radio on Android — the World View on a phone">
-<img src="shots/desktop-world.jpg" width="720" alt="MODDYS World Radio on Android — the World View at desktop width">
-<img src="shots/desktop-world-drawer.jpg" width="720" alt="MODDYS World Radio on Android — a dot opened: the station drawer and the player">
+<img src="shots/phone-podcasts.jpg" width="300" alt="MODDYS World Radio &amp; Podcasts on Android — the podcast directory">
+<img src="shots/phone-list.jpg" width="300" alt="MODDYS World Radio &amp; Podcasts on Android — the station list with the World View door">
+<img src="shots/phone-world.jpg" width="300" alt="MODDYS World Radio &amp; Podcasts on Android — the World View on a phone">
+<img src="shots/desktop-world.jpg" width="720" alt="MODDYS World Radio &amp; Podcasts on Android — the World View at desktop width">
+<img src="shots/desktop-world-drawer.jpg" width="720" alt="MODDYS World Radio &amp; Podcasts on Android — a dot opened: the station drawer and the player">
 
 ## What it does
 
+- **The podcast directory is in here.** `podcasts.html`, its index and all 81 shelf files
+  ship in the bundle, so browsing works with no network at all — only a show's feed, its
+  charts and its artwork go online. Search ranks on the phone (a query takes about 7 ms),
+  so nothing you type is sent anywhere, and shows you follow pick episodes up where you
+  stopped.
 - **Background playback.** A `mediaPlayback` foreground service keeps the stream alive
   after you leave the app or turn the screen off.
 - **Lock-screen controls.** A media notification shows the current station with
@@ -54,18 +61,31 @@ serves, riding inside the app since 1.8.0:
   radio alongside another app rather than pausing it. If you hear two things at once, pause
   the radio — it isn't fighting anything, but nothing is ducking for it either.
 - **Cleartext streams kept.** Android blocks `http://` by default; the network security
-  config allows it, because 8,330 of the 47,994 stations are cleartext. HTTPS stations
+  config allows it, because 11,610 of the 71,577 stations are cleartext. HTTPS stations
   are unaffected and certificate checks are *not* bypassed.
 - **Station links go to your browser.** The site's Stream and Website buttons are
   `target="_blank"` links, which Android's WebView drops on the floor when there is no
   second window. They are handed to the phone's browser instead, so they work and the
   player is never navigated away from.
-- **Same theme, same data.** The real `index.html`, `stations.js` and `countries.js` are
-  bundled, so the station list works with no network — only the streams need it.
+- **Same theme, same data.** The real `index.html`, `podcasts.html`, `stations.js`,
+  `countries.js` and the podcast index are bundled, so the station list and the directory
+  work with no network — only the streams and a show's feed need it.
 - **Favourites persist** across launches (the site's `localStorage` works normally).
 - **Touch-correct.** Double-tap-zoom lag, tap highlights and rubber-band scroll are
   disabled. The `file://` "viewing the files directly from disk" banner is suppressed,
   because inside the app it is never true.
+
+## The podcast directory
+
+`podcasts.html` is the site's own page, byte-identical, served from the app bundle: shelves by
+genre, top charts by country, search over 54,539 shows, and a **Following** shelf that keeps
+your place in an episode. The bundled index is what makes it work on a plane — browsing and
+search never touch the network. Charts, artwork and episode audio do: those are the show's
+own feed.
+
+Inside the app the site's other doors are hidden, because they lead to pages the app does not
+carry. The podcast directory is the one that stays, and the **Radio** link at the top of it
+brings you back.
 
 ## Quick start
 
@@ -108,6 +128,7 @@ reproducible.)
 | `Compat.java` | reads `compat.json`, decides whether this device is supported, and shows the one-time notice |
 | `assets/www/_shell_shim.js` | the only new front-end code: the player sheet, its visualiser styles and light mode, external-link routing, the banner suppression, and state reporting. **Byte-identical to the iOS app's copy** |
 | `assets/www/compat.json` | the version thresholds the notice, the Check panel and the website all read |
+| `assets/www/podcasts.html`, `pod-index.js`, `pod-search.js`, `pod-i/` | the podcast directory and its offline index — the site's own files, byte-identical |
 | `res/xml/network_security_config.xml` | allows cleartext for the `http://` stations |
 | `tools/shim_harness.py` | drives that shell in a real browser on all three bridge paths |
 
@@ -148,7 +169,7 @@ players that can disagree.
 | Installing on something older | Android's own installer refuses: the APK declares `minSdkVersion 26`, so Play shows the requirement and a sideload fails with "app not compatible". Nothing is downloaded that cannot run. |
 | Playback engine | the device's **Android System WebView** — its version, not the Android version, decides what plays |
 | Formats | MP3 and AAC everywhere; **HLS (`.m3u8`) only where the WebView can decode it** (about 3,000 of the stations are HLS) |
-| Cleartext | allowed app-wide: ~8,300 stations are plain `http://` |
+| Cleartext | allowed app-wide: ~11,600 stations are plain `http://` |
 | No WebView at all | the app says so and tells you what to install, instead of crashing |
 
 **The compatibility notice.** Two levels, on purpose. The **hard** floor is 8.0, and Android
@@ -163,14 +184,14 @@ Both numbers live in `assets/www/compat.json`, which is also where the iOS app k
 One file per platform, one source of truth per number.
 
 The **Check** panel in the expanded player reports the verdict, the WebView version, which
-formats the device can decode, and how many of the 47,994 stations it can actually play — with
+formats the device can decode, and how many of the 71,577 stations it can actually play — with
 a **Copy report** button for sending that on. If stations misbehave on a device, that report
 is the answer: it is almost always the WebView version or a missing codec.
 
 The **Playable** filter in the player hides anything this device cannot decode, so nobody
 gets stuck tapping stations that were never going to work.
 
-## Known limitations (v1.x)
+## Known limitations (v2.x)
 
 - **Broken streams still fail.** Some stations have expired or self-signed certificates;
   the app reports the error rather than papering over it.
@@ -179,7 +200,7 @@ gets stuck tapping stations that were never going to work.
 ## Privacy & safety
 
 Nothing is collected, nothing is transmitted anywhere except the radio streams you press
-play on. There are no analytics, no ads, no third-party SDKs — the app has **zero
+play on and, when you open a show, that show's feed and artwork. There are no analytics, no ads, no third-party SDKs — the app has **zero
 external dependencies**, only Android's own WebView, MediaSession and Notification APIs.
 Cleartext HTTP is permitted because your catalogue needs it; that permits no certificate
 weakening, and the only network traffic is the station stream itself.
