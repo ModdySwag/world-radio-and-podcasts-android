@@ -233,13 +233,40 @@ def main() -> int:
               "WebView" in str(cj.get("engine", {}).get("name")),
               cj.get("engine", {}).get("name"))
 
-    if a.site and "assets/www/index.html" in names:
-        site_page = os.path.join(a.site, "index.html")
-        if os.path.exists(site_page):
-            here = hashlib.sha256(z.read("assets/www/index.html")).hexdigest()
-            there = hashlib.sha256(open(site_page, "rb").read()).hexdigest()
-            check("the bundled page is byte-identical to the site's",
-                  here == there, "%s vs %s" % (here[:16], there[:16]))
+    if a.site:
+        # The app's index.html IS the site's radio.html (sync-assets writes it there so the
+        # shell opens the radio, while the site's index.html has been the front DOORS page
+        # since 2026-10-26). Comparing like for like means applying the same mapping, then
+        # comparing everything else by name - including the podcast directory, which is the
+        # whole point of 2.0.0. App-only files (_shell_shim.js, compat.json) are not site files.
+        SOURCE_OF = {"index.html": "radio.html"}
+        APP_ONLY = {"_shell_shim.js", "compat.json"}
+        compared, differ, missing = 0, [], []
+        for name in sorted(names):
+            if not name.startswith("assets/www/"):
+                continue
+            rel = name[len("assets/www/"):]
+            if rel in APP_ONLY or "/" in rel:
+                continue
+            site_rel = SOURCE_OF.get(rel, rel)
+            site_file = os.path.join(a.site, site_rel)
+            if not os.path.exists(site_file):
+                missing.append(rel)
+                continue
+            here = hashlib.sha256(z.read(name)).hexdigest()
+            there = hashlib.sha256(open(site_file, "rb").read()).hexdigest()
+            compared += 1
+            if here != there:
+                differ.append("%s (%s vs %s)" % (rel, here[:12], there[:12]))
+        check("every bundled web file is byte-identical to the site's",
+              compared >= 12 and not differ,
+              "%d compared, differ: %s" % (compared, differ))
+        check("and nothing the site carries is missing from the bundle",
+              not missing, missing)
+        # The directory's shelves, counted rather than sampled: a folder that dropped half
+        # its files would still pass a sample.
+        shelves = [n for n in names if n.startswith("assets/www/pod-i/") and n.endswith(".js")]
+        check("all 81 podcast shelf files are in the APK", len(shelves) == 81, len(shelves))
 
     if "assets/www/_shell_shim.js" in names:
         shim = z.read("assets/www/_shell_shim.js").decode("utf-8", "replace")
