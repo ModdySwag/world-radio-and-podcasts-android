@@ -77,11 +77,10 @@ the same pages the site serves, riding inside the app:
 
 ## The podcast directory
 
-`podcasts.html` is the site's own page, byte-identical, served from the app bundle: shelves by
-genre, top charts by country, search over 54,539 shows, and a **Following** shelf that keeps
-your place in an episode. The bundled index is what makes it work on a plane — browsing and
-search never touch the network. Charts, artwork and episode audio do: those are the show's
-own feed.
+`podcasts.html` is the site's own page, served from the app bundle: shelves by genre, top
+charts by country, search over 54,539 shows, and a **Following** shelf that keeps your place in
+an episode. The bundled index is what makes it work on a plane — browsing and search never touch
+the network. Charts, artwork and episode audio do: those are the show's own feed.
 
 Inside the app the site's other doors are hidden, because they lead to pages the app does not
 carry. The podcast directory is the one that stays, and the **Radio** link at the top of it
@@ -119,6 +118,14 @@ Then commit the changed files. The CI workflow can also do the pull for you: run
 workflow never re-syncs: it ships exactly what is committed, so a release is
 reproducible.)
 
+Two things are deliberately not copied verbatim, because a bundle is not the site:
+the site's bottom strip (`site-chrome.css` / `site-chrome.js`) is cut out of every bundled
+page — inside the app the shell's sheet is the player, and a strip drawn underneath it is
+the site's navigation, not the app's — and `/theme-tokens.css` (an absolute site path, so a
+404 under `file://`) ships beside the pages and is linked relatively. Both steps live in
+`tools/sync-assets.py`; `--check` applies them to the site's bytes and exits non-zero on any
+drift, so "the bundle is current" is a command, not a memory.
+
 ## How it fits together
 
 | file | role |
@@ -128,7 +135,7 @@ reproducible.)
 | `Compat.java` | reads `compat.json`, decides whether this device is supported, and shows the one-time notice |
 | `assets/www/_shell_shim.js` | the only new front-end code: the player sheet, its visualiser styles and light mode, external-link routing, the banner suppression, and state reporting. **Byte-identical to the iOS app's copy** |
 | `assets/www/compat.json` | the version thresholds the notice, the Check panel and the website all read |
-| `assets/www/podcasts.html`, `pod-index.js`, `pod-search.js`, `pod-i/` | the podcast directory and its offline index — the site's own files, byte-identical |
+| `assets/www/podcasts.html`, `pod-index.js`, `pod-search.js`, `pod-i/` | the podcast directory and its offline index — the site's own files (the page without the site strip, see above) |
 | `res/xml/network_security_config.xml` | allows cleartext for the `http://` stations |
 | `tools/shim_harness.py` | drives that shell in a real browser on all three bridge paths |
 
