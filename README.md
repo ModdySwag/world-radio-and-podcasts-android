@@ -1,5 +1,9 @@
 # MODDYS World Radio & Podcasts — Android
 
+[![Licence: MIT](https://img.shields.io/badge/licence-MIT-0E8C7C?style=flat-square)](LICENSE)
+![Platform: Android](https://img.shields.io/badge/platform-Android-0A7A6C?style=flat-square)
+[![Latest release](https://img.shields.io/github/v/release/ModdySwag/world-radio-and-podcasts-android?color=FFB86B&label=release&style=flat-square)](https://github.com/ModdySwag/world-radio-and-podcasts-android/releases)
+
 **SPRAY IT LOUD, in your pocket.** This is the radio site *and* the podcast directory in one
 app: **71,577 live stations** plus **58,795 shows** you can browse by shelf and search by
 typing, wrapped in the Android shell the radio never had. It keeps playing when you leave
@@ -207,9 +211,21 @@ gets stuck tapping stations that were never going to work.
 ## Privacy & safety
 
 Nothing is collected, nothing is transmitted anywhere except the radio streams you press
-play on and, when you open a show, that show's feed and artwork. There are no analytics, no ads, no third-party SDKs — the app has **zero
-external dependencies**, only Android's own WebView, MediaSession and Notification APIs.
+play on and, when you open a show, that show's feed and artwork. There are no analytics, no ads, no third-party SDKs — the app has **no native
+dependencies at all**, only Android's own WebView, MediaSession and Notification APIs. The site
+it bundles uses one library, MapLibre GL JS, for the World view's globe.
 Cleartext HTTP is permitted because your catalogue needs it; that permits no certificate
 weakening, and the only network traffic is the station stream itself.
+
+## Licence
+
+The app shell, the Kotlin/Swift sources, the scripts and the build files are **MIT** — see
+[`LICENSE`](LICENSE). The site files bundled from moddys.net are original work under the same
+terms.
+
+The single piece of third-party code is **MapLibre GL JS** (BSD-3-Clause), which draws the
+World view's globe. Its licence ships beside it and is repeated in
+[`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md). Station and podcast metadata belongs to the
+stations and shows that publish it.
 
 Cheers Moddy !
